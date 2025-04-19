@@ -12,6 +12,7 @@ pygame.display.set_caption("Virtual Pet")
 
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 36)
+facing_right = True
 
  
 
@@ -28,6 +29,9 @@ def load_data():
 
 hunger, happiness = load_data()
 
+speed = 2
+direction = 1 
+
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -39,7 +43,7 @@ SAD_COLOR = (255, 100, 100)
 feed_button = pygame.Rect(100, 300, 150, 50)
 play_button = pygame.Rect(350, 300, 150, 50)
 
-image = pygame.image.load("Pet.png")  
+image = pygame.image.load("Pet1.png")  
 image = pygame.transform.scale(image, (50, 50))  # Resize the image to fit the pet size
 
 
@@ -55,7 +59,9 @@ while running:
     pet_color = HAPPY_COLOR if happiness >= 7 else SAD_COLOR if happiness <= 3 else PET_COLOR
 
     # Draw pet
-    screen.blit(image, (800//2, 600//2 - 50))
+    screen.blit(image, image_rect)
+
+
 
     # Draw hunger and happiness bars
     hunger_text = font.render(f"Hunger: {hunger}/100", True, BLACK)
@@ -73,6 +79,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        
+           
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if feed_button.collidepoint(event.pos):
@@ -86,12 +94,21 @@ while running:
         hunger = max(0, hunger - 1)
         happiness = max(0, happiness - 1)
 
+    image_rect.x += speed * direction
+    if image_rect.x < 100 or image_rect.x > 700 - image_rect.width:
+        direction *= -1
+        facing_right = direction > 0
+        image = pygame.transform.flip(image, True, False) 
+        
     pygame.display.flip()
     clock.tick(60)
+
 
 if event.type == pygame.QUIT:
     save_data(hunger, happiness)
     running = False
+
+
 
 
 pygame.quit()
